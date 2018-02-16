@@ -1,35 +1,35 @@
 <?php
-	namespace Belka\Modules\Advert\Models;
+	namespace B\Modules\Advert\Models;
 
-	use Belka\Library\Sphinx\ListAdvert;
+	use B\Library\Sphinx\ListAdvert;
   use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 	use Phalcon\Mvc\Model\Transaction\Failed as TxFailed;
 	use Phalcon\Mvc\Model\Transaction\Manager as TxManager;
 	use Phalcon\DI\FactoryDefault;
 
-	use Belka\Library\Image\RedisUploader;
-	use Belka\Library\Validators\Advert\MainValidator;
-	use Belka\Library\Error\Controller as Error;
-	use Belka\Library\Lang\Controller as Lang;
-	use Belka\Library\System\Controller as System;
-	use Belka\Library\Logger\Controller as Logger;
-  use Belka\Library\Helper\RedisHelper;
-	use Belka\Library\Emails\Main as Email;
-	use Belka\Library\Helper\Advert\RedefinitionDataHelper;
+	use B\Library\Image\RedisUploader;
+	use B\Library\Validators\Advert\MainValidator;
+	use B\Library\Error\Controller as Error;
+	use B\Library\Lang\Controller as Lang;
+	use B\Library\System\Controller as System;
+	use B\Library\Logger\Controller as Logger;
+  use B\Library\Helper\RedisHelper;
+	use B\Library\Emails\Main as Email;
+	use B\Library\Helper\Advert\RedefinitionDataHelper;
 
-	use Belka\Modules\Profile\Models\User;
-  use Belka\Modules\Advert\Models\Field;
-	use Belka\Modules\Advert\Models\Stat\Job\TeachType as StatTeachType;
-	use Belka\Modules\Advert\Models\Stat\Car\Mark;
-	use Belka\Modules\Advert\Models\Stat\Car\Model;
-	use Belka\Modules\Advert\Models\Stat\Year;
+	use B\Modules\Profile\Models\User;
+  use B\Modules\Advert\Models\Field;
+	use B\Modules\Advert\Models\Stat\Job\TeachType as StatTeachType;
+	use B\Modules\Advert\Models\Stat\Car\Mark;
+	use B\Modules\Advert\Models\Stat\Car\Model;
+	use B\Modules\Advert\Models\Stat\Year;
 
   use Foolz\SphinxQL\SphinxQL;
 	use Foolz\SphinxQL\Connection as SphinxConnection;
-	use Belka\Library\Sphinx\ClientShell as Sphinx;
-	use Belka\Library\Helper\Advert\PriceHelper;
+	use B\Library\Sphinx\ClientShell as Sphinx;
+	use B\Library\Helper\Advert\PriceHelper;
 
-  use Belka\Library\Helper\Advert\IconHelper;
+  use B\Library\Helper\Advert\IconHelper;
 
 	class Main extends \Phalcon\Mvc\Model
 	{
@@ -57,7 +57,7 @@
 		public function initialize() {
 			$this->hasOne(
 		    "category_id",
-		    "Belka\\Modules\\Advert\\Models\\Category",
+		    "B\\Modules\\Advert\\Models\\Category",
 				"id", [
 					"alias" => "category"
 				]
@@ -65,7 +65,7 @@
 
 			$this->hasOne(
 		    "city_id",
-		    "Belka\\Modules\\System\\Models\\Location",
+		    "B\\Modules\\System\\Models\\Location",
 				"id", [
 					"alias" => "city"
 				]
@@ -73,7 +73,7 @@
 
 		  $this->hasOne(
 	      "id",
-	      "Belka\\Modules\\Profile\\Models\\Phone",
+	      "B\\Modules\\Profile\\Models\\Phone",
 				"user_id", [
 					"alias" => "phone"
 				]
@@ -81,7 +81,7 @@
 
 			$this->hasOne(
 				"id",
-				"Belka\\Modules\\Profile\\Models\\Social",
+				"B\\Modules\\Profile\\Models\\Social",
 				"user_id", [
 					"alias" => "social"
 				]
@@ -514,7 +514,7 @@
 		}
 
     public function afterSave() {
-			$changedAdverts = RedisHelper::getJson('belka_adverts_what_be_changed_till_reindexation', true);
+			$changedAdverts = RedisHelper::getJson('B_adverts_what_be_changed_till_reindexation', true);
 
 			if(is_null($changedAdverts))
 				return false;
@@ -524,7 +524,7 @@
 
 			$changedAdverts[] = $this->id;
 
-			RedisHelper::setJson('belka_adverts_what_be_changed_till_reindexation', $changedAdverts);
+			RedisHelper::setJson('B_adverts_what_be_changed_till_reindexation', $changedAdverts);
     }
 
 		public function sendEmailAdvertOnModeration() {
