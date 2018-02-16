@@ -114,138 +114,7 @@
 		private function generateSeoname() {
 			$this->seoname = System::getTranslit($this->header);
 		}
-
-		private function generateHeader() {
-			$data = $this->validation->getData();
-
-			switch($data['category_id']) {
-				case 16: // Легковые автомобили
-					$mark = Mark::findFirst($data['car_mark_id']);
-					$model = Model::findFirst($data['car_model_id']);
-					$year = Year::findFirst($data['year_id']);
-
-					$header = "{$mark->name} {$model->name}, {$year->name}";
-				break;
-
-				case 685:// Гаражи продам
-					$area = number_format($data['building_area'], 0, '', ' ');
-					$header = "Гараж, {$area} м²";
-				break;
-				case 693:// Гаражи, на длительный срок
-					$area = number_format($data['building_area'], 0, '', ' ');
-					$header = "Гараж, {$area} м²";
-				break;
-				case 694:// Гаражи, посуточно
-					$area = number_format($data['building_area'], 0, '', ' ');
-					$header = "Гараж, {$area} м²";
-				break;
-
-				case 687: // Дома, продам
-					$area = number_format($data['building_area'], 0, '', ' ');
-					$areaSection = number_format($data['building_area_section'], 0, '', ' ');
-
-					$header = "Дом, $area м², на участке $areaSection сот.";
-				break;
-				case 695: // Дома, на длительный срок
-					$area = number_format($data['building_area'], 0, '', ' ');
-					$areaSection = number_format($data['building_area_section'], 0, '', ' ');
-
-					$header = "Дом, $area м², на участке $areaSection сот.";
-				break;
-				case 696: // Дома, посуточно
-					$area = number_format($data['building_area'], 0, '', ' ');
-					$areaSection = number_format($data['building_area_section'], 0, '', ' ');
-
-					$header = "Дом, $area м², на участке $areaSection сот.";
-				break;
-
-				case 689: // Квартиры продам
-					if($data['building_count_room_id'] == 1)
-						$header = 'Студия';
-					else {
-						$countRoom = $data['building_count_room_id'] - 1;
-						$header = "$countRoom-к, Квартира";
-					}
-
-					$header .= ", " . number_format($data['building_area'], 0, '', ' ') . " м², {$data["building_floor"]}/{$data["building_count_floor"]} эт.";
-				break;
-				case 697: // Квартиры
-					if($data['building_count_room_id'] == 1)
-						$header = 'Студия';
-					else {
-						$countRoom = $data['building_count_room_id'] - 1;
-						$header = "$countRoom-к, Квартира";
-					}
-
-					$area = number_format($data['building_area'], 0, '', ' ');
-
-					$header .= ", {$area} м², {$data["building_floor"]}/{$data["building_count_floor"]} эт.";
-				break;
-				case 698: // Квартиры
-					if($data['building_count_room_id'] == 1)
-						$header = 'Студия';
-					else {
-						$countRoom = $data['building_count_room_id'] - 1;
-						$header = "$countRoom-к, Квартира";
-					}
-
-					$area = number_format($data['building_area'], 0, '', ' ');
-
-					$header .= ", {$area} м², {$data["building_floor"]}/{$data["building_count_floor"]} эт.";
-				break;
-
-				case 691: // Комнаты, продам
-					$area = number_format($data['building_area'], 0, '', ' ');
-
-					$header = "в {$data['building_count_room_id']}-к, Комната, {$area} м², {$data["building_floor"]}/{$data["building_count_floor"]}";
-				break;
-				case 699: // Комнаты, на длительный срок
-					$area = number_format($data['building_area'], 0, '', ' ');
-
-					$header = "в {$data['building_count_room_id']}-к, Комната, {$area} м², {$data["building_floor"]}/{$data["building_count_floor"]}";
-				break;
-				case 700: // Комнаты, посуточно
-					$area = number_format($data['building_area'], 0, '', ' ');
-
-					$header = "в {$data['building_count_room_id']}-к, Комната, {$area} м², {$data["building_floor"]}/{$data["building_count_floor"]}";
-				break;
-
-				case 147: // Участки
-					$areaSection = number_format($data['building_area_section'], 0, '', ' ');
-
-					$header = "Участок {$areaSection} сот.";
-				break;
-
-				case 148: // Машиноместо
-					$areaSection = number_format($data['building_area_section'], 0, '', ' ');
-
-					$header = "Машиноместо {$areaSection} м²";
-				break;
-
-				case 178:
-					$header = "Резюме: {$data['job_post']}";
-				break;
-
-				case 179: // Вакансии
-					$header = "{$data['job_post']}";
-				break;
-
-				case 180:
-					$type =	StatTeachType::findFirst($data['job_teach_type_id']);
-
-					$header = "{$type->name}: {$data['job_surname']} {$data['job_name']}";
-
-					if(isset($data['job_patronimic']))
-						$header .= " {$data['job_patronimic']}";
-
-				break;
-				default:
-					$header = $data['header'];
-			}
-
-			$this->header = $header;
-		}
-
+		
 		private function getCustomRegionId() {
 			$data = $this->validation->getData();
 
@@ -256,52 +125,8 @@
 				return $data['map_region_id'];
 
 			return false;
-		}
-
-		public function setValues() {
-			$userId = User::getUserIdFromSession();
-			$user = User::getFromRedis($userId, ['city_id']);
-
-			$this->category_id = $this->validation->data['category_id'];
-			$this->user_id = $userId;
-			$this->dt_create = time();
-			$this->dt_sort = $this->dt_create;
-			$this->status_id = self::STATUS_ON_MODERATION;
-			$this->dt_expired = $this->dt_create + FactoryDefault::getDefault()->getConfig()->advert->lifetime;
-
-			if($cityId = $this->getCustomRegionId())
-				$this->city_id = $cityId;
-			else
-				$this->city_id = $user['city_id']; // по умолчанию исполюзуется id города пользователя
-		}
-
-		public function savePhotos() {
-			$uploader = new RedisUploader();
-
-			$photos = $uploader->write(
-				$this->validation->data[self::FIELD_HASH_NAME], [
-					'advert_id' => $this->id,
-					'dt_create' => $this->dt_create
-				]
-			);
-
-			if(is_array($photos)) {
-				if(empty($photos))
-					$this->photos = '';
-				else
-					$this->photos = json_encode($photos);
-
-				if(!$this->save()) {
-					$this->rollbackTransaction();
-					Logger::error('Объявление не сохранилось', ['data' => $this->getMessages()]);
-
-					return ['system' => [Lang::get('error_system_unknown')]];
-				}
-			}
-
-			return false;
-		}
-
+		}	
+			
 		public function setDataModify() {
 			if(isset($this->dt_modifies))
 				if($dt_modifies = json_decode($this->dt_modifies, true))
@@ -386,7 +211,7 @@
 
 				if(is_array($data[$nameField])) {
 					foreach($data[$nameField] as $value) {
-						if($value == '') // если пустое поле, то пропускаем это поле
+						if($value == '') 
 							continue;
 
 						$namespace = get_class($models[$nameField]);
@@ -410,7 +235,7 @@
 						}
 					}
 				} else {
-					if($data[$nameField] == '') // если пустое поле, то пропускаем это поле
+					if($data[$nameField] == '') 
 						continue;
 
 					if(isset($field['settings']))
@@ -430,13 +255,7 @@
 
 							return ['system' => [Lang::get('error_system_unknown')]];
 						}
-					} catch (\PDOException $e) {
-						// echo $models[$nameField]->value;
-						// echo '<br>';
-						// echo '<br>';
-						// echo $e->getMessage();
-						// echo 'err';
-						//exit();
+					} catch (\PDOException $e) {						
 					}
 
 				}
@@ -511,21 +330,7 @@
 					->where('id', '=', (int) $id);
 
 			return !empty($sphinx->execute());
-		}
-
-    public function afterSave() {
-			$changedAdverts = RedisHelper::getJson('B_adverts_what_be_changed_till_reindexation', true);
-
-			if(is_null($changedAdverts))
-				return false;
-
-			if(in_array($this->id, $changedAdverts))
-				return false;
-
-			$changedAdverts[] = $this->id;
-
-			RedisHelper::setJson('B_adverts_what_be_changed_till_reindexation', $changedAdverts);
-    }
+		}   
 
 		public function sendEmailAdvertOnModeration() {
 			$advert = $this->toArray();
